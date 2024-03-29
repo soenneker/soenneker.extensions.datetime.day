@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
-using Soenneker.Enums.DateTimePrecision;
 using Soenneker.Enums.DayOfWeek;
+using Soenneker.Enums.UnitOfTime;
 
 namespace Soenneker.Extensions.DateTime.Day;
 
@@ -25,7 +25,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToStartOf(DateTimePrecision.Day);
+        System.DateTime result = dateTime.ToStartOf(UnitOfTime.Day);
         return result;
     }
 
@@ -41,7 +41,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToEndOf(DateTimePrecision.Day);
+        System.DateTime result = dateTime.ToEndOf(UnitOfTime.Day);
         return result;
     }
 
@@ -77,6 +77,23 @@ public static class DateTimeDayExtension
 
     /// <summary>
     /// Converts the given UTC datetime (<paramref name="utcNow"/>) to the timezone specified by <paramref name="tzInfo"/>, 
+    /// adjusts it to the start of the current day in that timezone, then converts back to UTC.
+    /// </summary>
+    /// <param name="utcNow">The current UTC datetime.</param>
+    /// <param name="tzInfo">The timezone information to use for the conversion.</param>
+    /// <returns>A new <see cref="System.DateTime"/> instance representing the start of the current day in the specified timezone, converted back to UTC.</returns>
+    /// <remarks>
+    /// This method facilitates timezone-specific datetime calculations, ensuring the output is in UTC for consistent further processing.
+    /// </remarks>
+    [Pure]
+    public static System.DateTime ToStartOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
+    {
+        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfDay().ToUtc(tzInfo);
+        return result;
+    }
+
+    /// <summary>
+    /// Converts the given UTC datetime (<paramref name="utcNow"/>) to the timezone specified by <paramref name="tzInfo"/>, 
     /// adjusts it to the start of the previous day in that timezone, then converts back to UTC.
     /// </summary>
     /// <param name="utcNow">The current UTC datetime.</param>
@@ -88,7 +105,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfPreviousDay().ToUtc(tzInfo);
+        System.DateTime result = utcNow.ToStartOfTzDay(tzInfo).AddDays(-1);
         return result;
     }
 
@@ -105,24 +122,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfNextDay().ToUtc(tzInfo);
-        return result;
-    }
-
-    /// <summary>
-    /// Converts the given UTC datetime (<paramref name="utcNow"/>) to the timezone specified by <paramref name="tzInfo"/>, 
-    /// adjusts it to the start of the current day in that timezone, then converts back to UTC.
-    /// </summary>
-    /// <param name="utcNow">The current UTC datetime.</param>
-    /// <param name="tzInfo">The timezone information to use for the conversion.</param>
-    /// <returns>A new <see cref="System.DateTime"/> instance representing the start of the current day in the specified timezone, converted back to UTC.</returns>
-    /// <remarks>
-    /// This method facilitates timezone-specific datetime calculations, ensuring the output is in UTC for consistent further processing.
-    /// </remarks>
-    [Pure]
-    public static System.DateTime ToStartOfCurrentTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
-    {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfDay().ToUtc(tzInfo);
+        System.DateTime result = utcNow.ToStartOfTzDay(tzInfo).AddDays(1);
         return result;
     }
 
@@ -136,7 +136,7 @@ public static class DateTimeDayExtension
     /// Useful for end-of-day calculations across timezones. The result is adjusted to UTC to facilitate universal application.
     /// </remarks>
     [Pure]
-    public static System.DateTime ToEndOfCurrentTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
+    public static System.DateTime ToEndOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
         System.DateTime result = utcNow.ToStartOfNextTzDay(tzInfo).AddTicks(-1);
         return result;
@@ -154,7 +154,14 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToStartOfCurrentTzDay(tzInfo).AddTicks(-1);
+        System.DateTime result = utcNow.ToEndOfTzDay(tzInfo).AddDays(-1);
+        return result;
+    }
+
+    [Pure]
+    public static System.DateTime ToEndOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
+    {
+        System.DateTime result = utcNow.ToEndOfTzDay(tzInfo).AddDays(1);
         return result;
     }
 
