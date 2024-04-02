@@ -103,4 +103,88 @@ public class DateTimeDayExtensionTests : UnitTest
         System.DateTime result = _utcNow.ToEndOfPreviousTzDay(Tz.Eastern);
         result.Kind.Should().Be(DateTimeKind.Utc);
     }
+
+    [Fact]
+    public void ToStartOfTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 3, 12, 12, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 8:00 AM in Eastern Time Zone before DST start
+        var expected = new System.DateTime(2023, 3, 12, 5, 0, 0, DateTimeKind.Utc); // Represents 1:00 AM in Eastern Time Zone
+
+        // Act
+        var result = utcNow.ToStartOfTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
+
+    [Fact]
+    public void ToStartOfPreviousTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 11, 5, 9, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 9:00 AM in Eastern Time Zone after DST end
+        var expected = new System.DateTime(2023, 11, 4, 0, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 1:00 AM in Eastern Time Zone
+
+        // Act
+        var result = utcNow.ToStartOfPreviousTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
+
+    [Fact]
+    public void ToStartOfNextTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 3, 12, 11, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 7:00 AM in Eastern Time Zone before DST start
+        var expected = new System.DateTime(2023, 3, 13, 0, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 1:00 AM in Eastern Time Zone after DST shift
+
+        // Act
+        var result = utcNow.ToStartOfNextTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
+
+    [Fact]
+    public void ToEndOfTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 11, 5, 7, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 7:00 AM in Eastern Time Zone after DST end
+        var expected = new System.DateTime(2023, 11, 6, 4, 59, 59, 999, 999, DateTimeKind.Utc); // Represents 11:59:59.999 PM in Eastern Time Zone
+
+        // Act
+        var result = utcNow.ToEndOfTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
+
+    [Fact]
+    public void ToEndOfPreviousTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 3, 11, 7, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 7:00 AM in Eastern Time Zone before DST start
+        var expected = new System.DateTime(2023, 3, 10, 23, 59, 59, 999, 999, DateTimeKind.Utc).ToUtc(Tz.Eastern); // Represents 11:59:59.999 PM in Eastern Time Zone
+
+        // Act
+        var result = utcNow.ToEndOfPreviousTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
+
+    [Fact]
+    public void ToEndOfNextTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
+    {
+        // Arrange
+        var utcNow = new System.DateTime(2023, 11, 5, 9, 0, 0, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 9:00 AM in Eastern Time Zone after DST end
+        var expected = new System.DateTime(2023, 11, 6, 23, 59, 59, 999, 999, DateTimeKind.Unspecified).ToUtc(Tz.Eastern); // Represents 11:59:59.999 PM in Eastern Time Zone
+
+        // Act
+        var result = utcNow.ToEndOfNextTzDay(Tz.Eastern);
+
+        // Assert
+        result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
+    }
 }

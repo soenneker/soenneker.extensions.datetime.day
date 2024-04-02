@@ -76,6 +76,44 @@ public static class DateTimeDayExtension
     }
 
     /// <summary>
+    /// Extends the <see cref="System.DateTime"/> struct with a method to get the end of the previous day.
+    /// </summary>
+    /// <param name="dateTime">The <see cref="System.DateTime"/> value to calculate the end of the previous day from.</param>
+    /// <returns>A new <see cref="System.DateTime"/> instance representing the end of the previous day (23:59:59.9999999) based on the input <paramref name="dateTime"/> value.</returns>
+    /// <example>
+    /// For example, if the input <paramref name="dateTime"/> is "2023-04-01 12:34:56", the method will return "2023-03-31 23:59:59.9999999".
+    /// </example>
+    /// <remarks>
+    /// This method is marked as <c>Pure</c>, which means it has no side effects and its return value is solely determined by its input value.
+    /// It uses the <see cref="ToEndOfDay"/> method to get the end of the current day, and then subtracts one day using <see cref="System.DateTime.AddDays(double)"/> to get the end of the previous day.
+    /// </remarks>
+    [Pure]
+    public static System.DateTime ToEndOfPreviousDay(this System.DateTime dateTime)
+    {
+        System.DateTime result = dateTime.ToEndOfDay().AddDays(-1);
+        return result;
+    }
+
+    /// <summary>
+    /// Extends the <see cref="System.DateTime"/> struct with a method to get the end of the next day.
+    /// </summary>
+    /// <param name="dateTime">The <see cref="System.DateTime"/> value to calculate the end of the next day from.</param>
+    /// <returns>A new <see cref="System.DateTime"/> instance representing the end of the next day (23:59:59.9999999) based on the input <paramref name="dateTime"/> value.</returns>
+    /// <example>
+    /// For example, if the input <paramref name="dateTime"/> is "2023-04-01 12:34:56", the method will return "2023-04-02 23:59:59.9999999".
+    /// </example>
+    /// <remarks>
+    /// This method is marked as <c>Pure</c>, which means it has no side effects and its return value is solely determined by its input value.
+    /// It uses the <see cref="ToEndOfDay"/> method to get the end of the current day, and then adds one day using <see cref="System.DateTime.AddDays(double)"/> to get the end of the next day.
+    /// </remarks>
+    [Pure]
+    public static System.DateTime ToEndOfNextDay(this System.DateTime dateTime)
+    {
+        System.DateTime result = dateTime.ToEndOfDay().AddDays(1);
+        return result;
+    }
+
+    /// <summary>
     /// Converts the given UTC datetime (<paramref name="utcNow"/>) to the timezone specified by <paramref name="tzInfo"/>, 
     /// adjusts it to the start of the current day in that timezone, then converts back to UTC.
     /// </summary>
@@ -105,7 +143,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToStartOfTzDay(tzInfo).AddDays(-1);
+        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfPreviousDay().ToUtc(tzInfo);
         return result;
     }
 
@@ -122,7 +160,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToStartOfTzDay(tzInfo).AddDays(1);
+        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfNextDay().ToUtc(tzInfo);
         return result;
     }
 
@@ -138,7 +176,7 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToStartOfNextTzDay(tzInfo).AddTicks(-1);
+        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfDay().ToUtc(tzInfo);
         return result;
     }
 
@@ -154,14 +192,38 @@ public static class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToEndOfTzDay(tzInfo).AddDays(-1);
+        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfPreviousDay().ToUtc(tzInfo);
         return result;
     }
 
+    /// <summary>
+    /// Extends the <see cref="System.DateTime"/> struct with a method to get the end of the next day in a specified time zone.
+    /// </summary>
+    /// <param name="utcNow">The <see cref="System.DateTime"/> value in UTC to calculate the end of the next day from.</param>
+    /// <param name="tzInfo">The <see cref="System.TimeZoneInfo"/> representing the target time zone.</param>
+    /// <returns>A new <see cref="System.DateTime"/> instance representing the end of the next day (23:59:59.9999999) in the specified time zone, based on the input <paramref name="utcNow"/> value.</returns>
+    /// <example>
+    /// For example, if the input <paramref name="utcNow"/> is "2023-04-01 12:34:56" (in UTC) and the <paramref name="tzInfo"/> is "Eastern Standard Time", the method will return a <see cref="System.DateTime"/> value representing "2023-04-02 23:59:59.9999999" in the Eastern Time Zone.
+    /// </example>
+    /// <remarks>
+    /// This method is marked as <c>Pure</c>, which means it has no side effects and its return value is solely determined by its input values.
+    /// It uses the following steps:
+    /// <list type="number">
+    /// <item>
+    /// <description>Converts the input <paramref name="utcNow"/> value from UTC to the specified time zone using the <see cref="DateTimeExtension.ToTz(DateTime,TimeZoneInfo)"/> method.</description>
+    /// </item>
+    /// <item>
+    /// <description>Calls the <see cref="ToEndOfNextDay"/> extension method on the converted <see cref="System.DateTime"/> value to get the end of the next day in the specified time zone.</description>
+    /// </item>
+    /// <item>
+    /// <description>Converts the resulting <see cref="System.DateTime"/> value back to UTC using the <see cref="DateTimeExtension.ToUtc(DateTime,TimeZoneInfo)"/> method.</description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     [Pure]
     public static System.DateTime ToEndOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToEndOfTzDay(tzInfo).AddDays(1);
+        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfNextDay().ToUtc(tzInfo);
         return result;
     }
 
