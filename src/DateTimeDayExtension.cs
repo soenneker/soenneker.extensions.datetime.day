@@ -12,7 +12,7 @@ namespace Soenneker.Extensions.DateTime.Day;
 /// Note: These methods do not account for timezone differences unless explicitly stated. When dealing with time zones,
 /// ensure you use the appropriate methods that accept a <see cref="System.TimeZoneInfo"/> parameter.
 /// </remarks>
-public static class DateTimeDayExtension
+public static partial class DateTimeDayExtension
 {
     /// <summary>
     /// Adjusts the given <paramref name="dateTime"/> to the start of the current day (i.e., 00:00:00 or 12:00 AM).
