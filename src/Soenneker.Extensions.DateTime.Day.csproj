@@ -43,6 +43,6 @@
 
     <ItemGroup>
       <PackageReference Include="Soenneker.Enums.DayOfWeek" Version="2.1.308" />
-      <PackageReference Include="Soenneker.Extensions.DateTime" Version="2.1.499" />
+      <PackageReference Include="Soenneker.Extensions.DateTime" Version="2.1.500" />
     </ItemGroup>
 </Project>
