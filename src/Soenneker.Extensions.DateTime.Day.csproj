@@ -14,7 +14,7 @@
         <AssemblyName>Soenneker.Extensions.DateTime.Day</AssemblyName>
         <PackageId>Soenneker.Extensions.DateTime.Day</PackageId>
         <PackageTags>extensions datetime day timezone date time zone conversion datetimedayextension extension csharp dotnet c# .net</PackageTags>
-        <Copyright>Copyright © 2024 Jake Soenneker</Copyright>
+        <Copyright>Copyright © 2024-2025 Jake Soenneker</Copyright>
         <Authors>Jake Soenneker</Authors>
         <Company>https://soenneker.com</Company>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
