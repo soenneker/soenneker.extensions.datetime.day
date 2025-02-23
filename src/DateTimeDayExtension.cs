@@ -25,8 +25,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToStartOf(UnitOfTime.Day);
-        return result;
+        return dateTime.ToStartOf(UnitOfTime.Day);
     }
 
     /// <summary>
@@ -41,8 +40,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToEndOf(UnitOfTime.Day);
-        return result;
+        return dateTime.ToEndOf(UnitOfTime.Day);
     }
 
     /// <summary>
@@ -56,8 +54,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfNextDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToStartOfDay().AddDays(1);
-        return result;
+        return dateTime.ToStartOfDay().AddDays(1);
     }
 
     /// <summary>
@@ -71,8 +68,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfPreviousDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToStartOfDay().AddDays(-1);
-        return result;
+        return dateTime.ToStartOfDay().AddDays(-1);
     }
 
     /// <summary>
@@ -90,8 +86,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfPreviousDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToEndOfDay().AddDays(-1);
-        return result;
+        return dateTime.ToEndOfDay().AddDays(-1);
     }
 
     /// <summary>
@@ -109,8 +104,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfNextDay(this System.DateTime dateTime)
     {
-        System.DateTime result = dateTime.ToEndOfDay().AddDays(1);
-        return result;
+        return dateTime.ToEndOfDay().AddDays(1);
     }
 
     /// <summary>
@@ -126,8 +120,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToStartOfDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -143,8 +136,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfPreviousDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToStartOfPreviousDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -160,8 +152,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToStartOfNextDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToStartOfNextDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -176,8 +167,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToEndOfDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -192,8 +182,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfPreviousDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToEndOfPreviousDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -223,8 +212,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        System.DateTime result = utcNow.ToTz(tzInfo).ToEndOfNextDay().ToUtc(tzInfo);
-        return result;
+        return utcNow.ToTz(tzInfo).ToEndOfNextDay().ToUtc(tzInfo);
     }
 
     /// <summary>
@@ -236,7 +224,6 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static DayOfWeekType ToDayOfWeekType(this System.DateTime dateTime)
     {
-        DayOfWeekType result = DayOfWeekType.FromValue((int) dateTime.DayOfWeek);
-        return result;
+        return DayOfWeekType.FromValue(dateTime.DayOfWeek.ToString());
     }
 }
