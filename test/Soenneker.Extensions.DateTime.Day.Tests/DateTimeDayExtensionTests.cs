@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using System;
 using Soenneker.Tests.Unit;
 using Soenneker.Utils.TimeZones;
