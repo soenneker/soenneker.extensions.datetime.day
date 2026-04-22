@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using System;
 using Soenneker.Tests.Unit;
 using Soenneker.Utils.TimeZones;
-using Xunit;
 
 namespace Soenneker.Extensions.DateTime.Day.Tests;
 
@@ -15,7 +14,7 @@ public class DateTimeDayExtensionTests : UnitTest
         _utcNow = System.DateTime.UtcNow;
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfTzDay_should_give_offset()
     {                               
         System.DateTime startOfDay = _utcNow.ToStartOfNextTzDay(Tz.Eastern);
@@ -23,7 +22,7 @@ public class DateTimeDayExtensionTests : UnitTest
         startOfDay.Hour.Should().Be(-Tz.Eastern.GetUtcOffset(startOfDay).Hours);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfTzDay_at_midnight()
     {
         System.DateTime midnightEasternInUtc = new(2022, 1, 1, 5, 0, 0);
@@ -33,14 +32,14 @@ public class DateTimeDayExtensionTests : UnitTest
         startOfDay.Hour.Should().Be(-Tz.Eastern.GetUtcOffset(startOfDay).Hours);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfDay_kind_should_be_utc()
     {
         System.DateTime result = _utcNow.ToStartOfDay();
         result.Kind.Should().Be(DateTimeKind.Utc);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfTzDay_twice_should_equal()
     {
         System.DateTime result1 = _utcNow.ToStartOfTzDay(Tz.Eastern);
@@ -48,28 +47,28 @@ public class DateTimeDayExtensionTests : UnitTest
         result1.Should().Be(result2);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfNextTzDay_kind_should_be_utc()
     {
         System.DateTime startOfDay = _utcNow.ToStartOfNextTzDay(Tz.Eastern);
         startOfDay.Kind.Should().Be(DateTimeKind.Utc);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfTzDay_kind_should_be_utc()
     {
         System.DateTime result = _utcNow.ToStartOfTzDay(Tz.Eastern);
         result.Kind.Should().Be(DateTimeKind.Utc);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfPreviousTzDay_kind_should_be_utc()
     {
         System.DateTime result = _utcNow.ToStartOfPreviousTzDay(Tz.Eastern);
         result.Kind.Should().Be(DateTimeKind.Utc);
     }
 
-    [Fact]
+    [Test]
     public void StartOfTzDay_ToEastern_hour_should_be_0()
     {
         System.DateTime startOfDay = _utcNow.ToStartOfNextTzDay(Tz.Eastern).ToTz(Tz.Eastern);
@@ -77,7 +76,7 @@ public class DateTimeDayExtensionTests : UnitTest
         startOfDay.Hour.Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfPreviousTzDay_ToEastern_hour_should_be_0()
     {
         System.DateTime startOfDay = _utcNow.ToStartOfPreviousTzDay(Tz.Eastern).ToTz(Tz.Eastern);
@@ -85,7 +84,7 @@ public class DateTimeDayExtensionTests : UnitTest
         startOfDay.Hour.Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public void ToEndOfTzDay_ToEastern_should_be_2359()
     {
         System.DateTime eastern = _utcNow.ToTz(Tz.Eastern);
@@ -97,14 +96,14 @@ public class DateTimeDayExtensionTests : UnitTest
         endOfDay.Date.Should().Be(eastern.Date);
     }
 
-    [Fact]
+    [Test]
     public void ToEndOfPreviousTzDay_kind_should_be_utc()
     {
         System.DateTime result = _utcNow.ToEndOfPreviousTzDay(Tz.Eastern);
         result.Kind.Should().Be(DateTimeKind.Utc);
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
@@ -118,7 +117,7 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfPreviousTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
@@ -132,7 +131,7 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Fact]
+    [Test]
     public void ToStartOfNextTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
@@ -146,7 +145,7 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Fact]
+    [Test]
     public void ToEndOfTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
@@ -160,7 +159,7 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Fact]
+    [Test]
     public void ToEndOfPreviousTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
@@ -174,7 +173,7 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Fact]
+    [Test]
     public void ToEndOfNextTzDay_Should_ReturnCorrectDateTime_WhenDSTChanges()
     {
         // Arrange
