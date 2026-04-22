@@ -15,10 +15,5 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Soenneker.Extensions.DateTime.Day\Soenneker.Extensions.DateTime.Day.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="testconfig.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 </Project>
+
