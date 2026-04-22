@@ -187,14 +187,14 @@ public class DateTimeDayExtensionTests : UnitTest
         result.Should().BeCloseTo(expected, precision: TimeSpan.FromMilliseconds(1));
     }
 
-    [Theory]
-    [InlineData(DayOfWeek.Sunday)]
-    [InlineData(DayOfWeek.Monday)]
-    [InlineData(DayOfWeek.Tuesday)]
-    [InlineData(DayOfWeek.Wednesday)]
-    [InlineData(DayOfWeek.Thursday)]
-    [InlineData(DayOfWeek.Friday)]
-    [InlineData(DayOfWeek.Saturday)]
+    [Test]
+    [Arguments(DayOfWeek.Sunday)]
+    [Arguments(DayOfWeek.Monday)]
+    [Arguments(DayOfWeek.Tuesday)]
+    [Arguments(DayOfWeek.Wednesday)]
+    [Arguments(DayOfWeek.Thursday)]
+    [Arguments(DayOfWeek.Friday)]
+    [Arguments(DayOfWeek.Saturday)]
     public void ToDayOfWeekType_ShouldReturnCorrectDayOfWeekType(DayOfWeek dayOfWeek)
     {
         // Arrange
@@ -212,3 +212,4 @@ public class DateTimeDayExtensionTests : UnitTest
         result.ToString().Should().Be(dayOfWeek.ToString());
     }
 }
+
