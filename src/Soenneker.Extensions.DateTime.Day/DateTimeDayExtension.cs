@@ -224,6 +224,16 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static DayOfWeekType ToDayOfWeekType(this System.DateTime dateTime)
     {
-        return DayOfWeekType.FromValue(dateTime.DayOfWeek.ToString());
+        return dateTime.DayOfWeek switch
+        {
+            System.DayOfWeek.Sunday => DayOfWeekType.Sunday,
+            System.DayOfWeek.Monday => DayOfWeekType.Monday,
+            System.DayOfWeek.Tuesday => DayOfWeekType.Tuesday,
+            System.DayOfWeek.Wednesday => DayOfWeekType.Wednesday,
+            System.DayOfWeek.Thursday => DayOfWeekType.Thursday,
+            System.DayOfWeek.Friday => DayOfWeekType.Friday,
+            System.DayOfWeek.Saturday => DayOfWeekType.Saturday,
+            _ => throw new System.ArgumentOutOfRangeException(nameof(dateTime))
+        };
     }
 }
