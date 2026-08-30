@@ -120,7 +120,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToStartOfDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, 0);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToStartOfPreviousDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, -1);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToStartOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToStartOfNextDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, 1);
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToEndOfDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, 1).AddTicks(-1);
     }
 
     /// <summary>
@@ -182,37 +182,19 @@ public static partial class DateTimeDayExtension
     [Pure]
     public static System.DateTime ToEndOfPreviousTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToEndOfPreviousDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, 0).AddTicks(-1);
     }
 
     /// <summary>
-    /// Extends the <see cref="System.DateTime"/> struct with a method to get the end of the next day in a specified time zone.
+    /// Returns the last UTC tick of the next local day in the specified time zone.
     /// </summary>
-    /// <param name="utcNow">The <see cref="System.DateTime"/> value in UTC to calculate the end of the next day from.</param>
-    /// <param name="tzInfo">The <see cref="System.TimeZoneInfo"/> representing the target time zone.</param>
-    /// <returns>A new <see cref="System.DateTime"/> instance representing the end of the next day (23:59:59.9999999) in the specified time zone, based on the input <paramref name="utcNow"/> value.</returns>
-    /// <example>
-    /// For example, if the input <paramref name="utcNow"/> is "2023-04-01 12:34:56" (in UTC) and the <paramref name="tzInfo"/> is "Eastern Standard Time", the method will return a <see cref="System.DateTime"/> value representing "2023-04-02 23:59:59.9999999" in the Eastern Time Zone.
-    /// </example>
-    /// <remarks>
-    /// This method is marked as <c>Pure</c>, which means it has no side effects and its return value is solely determined by its input values.
-    /// It uses the following steps:
-    /// <list type="number">
-    /// <item>
-    /// <description>Converts the input <paramref name="utcNow"/> value from UTC to the specified time zone using the <see cref="DateTimeExtension.ToTz(DateTime,TimeZoneInfo)"/> method.</description>
-    /// </item>
-    /// <item>
-    /// <description>Calls the <see cref="ToEndOfNextDay"/> extension method on the converted <see cref="System.DateTime"/> value to get the end of the next day in the specified time zone.</description>
-    /// </item>
-    /// <item>
-    /// <description>Converts the resulting <see cref="System.DateTime"/> value back to UTC using the <see cref="DateTimeExtension.ToUtc(DateTime,TimeZoneInfo)"/> method.</description>
-    /// </item>
-    /// </list>
-    /// </remarks>
+    /// <param name="utcNow">The UTC instant whose next local day is selected.</param>
+    /// <param name="tzInfo">The time zone that determines the local date boundary.</param>
+    /// <returns>One tick before the start of the local day after next, expressed as a UTC <see cref="System.DateTime"/>.</returns>
     [Pure]
     public static System.DateTime ToEndOfNextTzDay(this System.DateTime utcNow, System.TimeZoneInfo tzInfo)
     {
-        return utcNow.ToTz(tzInfo).ToEndOfNextDay().ToUtc(tzInfo);
+        return GetStartOfTzDay(utcNow, tzInfo, 2).AddTicks(-1);
     }
 
     /// <summary>
@@ -235,5 +217,26 @@ public static partial class DateTimeDayExtension
             System.DayOfWeek.Saturday => DayOfWeekType.Saturday,
             _ => throw new System.ArgumentOutOfRangeException(nameof(dateTime))
         };
+    }
+
+    private static System.DateTime GetStartOfTzDay(System.DateTime utc, System.TimeZoneInfo timeZoneInfo, int dayOffset)
+    {
+        System.DateTime utcInstant = utc.Kind == System.DateTimeKind.Utc
+            ? utc
+            : System.DateTime.SpecifyKind(utc, System.DateTimeKind.Utc);
+        System.DateTime local = System.TimeZoneInfo.ConvertTimeFromUtc(utcInstant, timeZoneInfo);
+        System.DateTime boundary = System.DateTime.SpecifyKind(local.Date.AddDays(dayOffset), System.DateTimeKind.Unspecified);
+
+        while (timeZoneInfo.IsInvalidTime(boundary))
+            boundary = boundary.AddMinutes(1);
+
+        if (timeZoneInfo.IsAmbiguousTime(boundary))
+        {
+            System.TimeSpan[] offsets = timeZoneInfo.GetAmbiguousTimeOffsets(boundary);
+            System.TimeSpan chosenOffset = offsets[0] >= offsets[1] ? offsets[0] : offsets[1];
+            return System.DateTime.SpecifyKind(boundary - chosenOffset, System.DateTimeKind.Utc);
+        }
+
+        return System.TimeZoneInfo.ConvertTimeToUtc(boundary, timeZoneInfo);
     }
 }

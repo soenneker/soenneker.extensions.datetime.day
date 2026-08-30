@@ -23,6 +23,18 @@ public class DateTimeDayExtensionTests : UnitTest
     }
 
     [Test]
+    public void ToStartOfNextTzDay_advances_through_a_midnight_gap()
+    {
+        TimeZoneInfo saoPaulo = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+        var beforeTransition = new System.DateTime(2018, 11, 3, 12, 0, 0, DateTimeKind.Utc);
+
+        System.DateTime result = beforeTransition.ToStartOfNextTzDay(saoPaulo);
+        System.DateTime localResult = TimeZoneInfo.ConvertTimeFromUtc(result, saoPaulo);
+
+        localResult.Should().Be(new System.DateTime(2018, 11, 4, 1, 0, 0, DateTimeKind.Unspecified));
+    }
+
+    [Test]
     public void ToStartOfTzDay_at_midnight()
     {
         System.DateTime midnightEasternInUtc = new(2022, 1, 1, 5, 0, 0);

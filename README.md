@@ -5,7 +5,7 @@
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Extensions.DateTime.Day
 
-A collection of helpful DateTime day-based extension methods.
+Computes current, previous, and next day boundaries for `DateTime`, either from its existing clock fields or from a UTC instant in a specified time zone.
 
 ## Installation
 
@@ -13,28 +13,56 @@ A collection of helpful DateTime day-based extension methods.
 dotnet add package Soenneker.Extensions.DateTime.Day
 ```
 
-## Quick start
+## Clock-field boundaries
 
 ```csharp
 using Soenneker.Extensions.DateTime.Day;
 
-DateTime dateTime = DateTime.UtcNow;
-var result = dateTime.ToStartOfDay();
+System.DateTime value = new(2026, 8, 29, 16, 42, 30, DateTimeKind.Utc);
+
+System.DateTime start = value.ToStartOfDay();
+System.DateTime end = value.ToEndOfDay();
+System.DateTime previousStart = value.ToStartOfPreviousDay();
+System.DateTime nextEnd = value.ToEndOfNextDay();
 ```
 
-## Common operations
+These methods do not perform a time-zone conversion. They operate on the date already present in the value and preserve its `Kind`.
 
-- `ToStartOfDay()` - Adjusts the given `dateTime` to the start of the current day (i.e., 00:00:00 or 12:00 AM). Returns a new `System.DateTime` instance representing the start of the current day of the input date. This method does not consider timezone differences.
-- `ToEndOfDay()` - Adjusts the given `dateTime` to the end of the current day (i.e., 23:59:59.9999999 or one tick before midnight). Returns a new `System.DateTime` instance representing the very end of the current day of the input date. This method does not consider timezone differences.
-- `ToStartOfNextDay()` - Adjusts the given `dateTime` to the start of the next day. Returns a new `System.DateTime` instance representing the start of the day following the input date. This method does not consider timezone differences.
-- `ToStartOfPreviousDay()` - Adjusts the given `dateTime` to the start of the previous day. Returns a new `System.DateTime` instance representing the start of the day prior to the input date. This method does not consider timezone differences.
-- `ToEndOfPreviousDay()` - Extends the `System.DateTime` struct with a method to get the end of the previous day. Returns a new `System.DateTime` instance representing the end of the previous day (23:59:59.9999999) based on the input `dateTime` value.
-- `ToEndOfNextDay()` - Extends the `System.DateTime` struct with a method to get the end of the next day. Returns a new `System.DateTime` instance representing the end of the next day (23:59:59.9999999) based on the input `dateTime` value.
-- `ToStartOfTzDay()` - Converts the given UTC datetime (`utcNow`) to the timezone specified by `tzInfo`, adjusts it to the start of the current day in that timezone, then converts back to UTC. Returns a new `System.DateTime` instance representing the start of the current day in the specified timezone, converted back to UTC.
-- `ToStartOfPreviousTzDay()` - Converts the given UTC datetime (`utcNow`) to the timezone specified by `tzInfo`, adjusts it to the start of the previous day in that timezone, then converts back to UTC. Returns a new `System.DateTime` instance representing the start of the previous day in the specified timezone, converted back to UTC.
-- `ToStartOfNextTzDay()` - Converts the given UTC datetime (`utcNow`) to the timezone specified by `tzInfo`, adjusts it to the start of the next day in that timezone, then converts back to UTC. Returns a new `System.DateTime` instance representing the start of the next day in the specified timezone, converted back to UTC.
-- `ToEndOfTzDay()` - Calculates the very last moment of the current day in the specified timezone (`tzInfo`) from the given UTC datetime (`utcNow`), then converts it back to UTC. Returns a new `System.DateTime` instance representing the very last tick of the current day in the specified timezone, converted back to UTC. Useful for end-of-day calculations across timezones.
-- `ToEndOfPreviousTzDay()` - Calculates the very last moment of the previous day in the specified timezone (`tzInfo`) from the given UTC datetime (`utcNow`), then converts it back to UTC. Returns a new `System.DateTime` instance representing the very last tick of the previous day in the specified timezone, converted back to UTC.
-- `ToEndOfNextTzDay()` - Extends the `System.DateTime` struct with a method to get the end of the next day in a specified time zone. Returns a new `System.DateTime` instance representing the end of the next day (23:59:59.9999999) in the specified time zone, based on the input `utcNow` value.
+| Method | Result |
+| --- | --- |
+| `ToStartOfDay()` | `00:00:00` on the same date |
+| `ToEndOfDay()` | One tick before the next date |
+| `ToStartOfPreviousDay()` | `00:00:00` on the previous date |
+| `ToEndOfPreviousDay()` | One tick before the current date |
+| `ToStartOfNextDay()` | `00:00:00` on the next date |
+| `ToEndOfNextDay()` | One tick before the date after next |
 
-The package also includes one additional operation for more specialized cases.
+## Time-zone-aware boundaries
+
+```csharp
+TimeZoneInfo eastern = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
+System.DateTime utc = new(2026, 8, 29, 18, 0, 0, DateTimeKind.Utc);
+
+System.DateTime localDayStartUtc = utc.ToStartOfTzDay(eastern);
+System.DateTime localDayEndUtc = utc.ToEndOfTzDay(eastern);
+```
+
+The `...TzDay()` methods use the supplied UTC clock fields to determine the corresponding local date, calculate that date's boundary in the target zone, and return the boundary as a UTC `DateTime`.
+
+Available methods cover the start and end of the current, previous, and next local day:
+
+- `ToStartOfTzDay()` / `ToEndOfTzDay()`
+- `ToStartOfPreviousTzDay()` / `ToEndOfPreviousTzDay()`
+- `ToStartOfNextTzDay()` / `ToEndOfNextTzDay()`
+
+If the input `Kind` is not `Utc`, its fields are treated as UTC rather than converted from the machine's local zone. Supply an actual UTC value to avoid ambiguity.
+
+Day boundaries use local calendar math rather than fixed 24-hour durations. If local midnight falls in a daylight-saving gap, the start advances to the first valid local minute. If it is ambiguous, the earlier UTC instant is selected. An end boundary is one tick before the following valid day boundary, so 23-hour, 25-hour, and skipped local dates are handled consistently.
+
+## Day-of-week mapping
+
+```csharp
+DayOfWeekType day = value.ToDayOfWeekType();
+```
+
+`ToDayOfWeekType()` maps `System.DayOfWeek` directly to the corresponding `Soenneker.Enums.DayOfWeek.DayOfWeekType`; it performs no time-zone conversion.
